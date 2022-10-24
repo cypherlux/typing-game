@@ -7,29 +7,22 @@
     <link rel="stylesheet" href="style.css" />
     <script src="script.js" defer></script>
 </head>
+
 <body>
     <main>
         <h1>Typing game :D</h1>
         <ul id="scores-unordered-list">
-            <li></li>
-        </ul>
+            </ul>
 
-        <template id="score-item-template">
-            <li>
-                <label class="score">
-                    <span class="score-text"></span>
-                </label>
-            </li>
-        </template>
+        <p>Practice your typing skills by typing out random uplifting hardstyle lyrics.</p>
 
-        <p>Practice your typing skills by typing out random hardstyle lyrics.</p>
+        <p>Enter your username, then click the start button to begin!</p>
+
         <div class="new">
-            <label for="gamer-name">Enter your gamer name.</label>
-            <input type="text" id="gamer-name"></input>
+            <label class="sr-only" for="gamer-name">Enter your username.</label>
+            <input type="text" id="gamer-name" placeholder="Enter your username"></input>
             <button type="button" class="button" id="start">start game <i class="rocket"></i></button>
         </div>
-        <br>
-        <p>Press the button to begin!</p>
 
         <p id="quote"></p>
         <p id="message"></p>
@@ -37,4 +30,13 @@
         <input type="text" id="typed-value" />
     </main>
 </body>
+
+<template id="score-item-template">
+    <li>
+        <label class="score">
+            <span class="score-text"></span>
+        </label>
+    </li>
+</template>
+
 </html>

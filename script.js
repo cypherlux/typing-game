@@ -19,8 +19,14 @@ let wordQueue;
 let highlightPosition;
 let startTime;
 
+start.addEventListener('click', startGame);
+input.addEventListener('input', checkInput);
 
-function startGame() {
+
+initializeGame();
+
+
+function startGame(){
     console.log("Game started");
     const scoreItem = {
         name: gamerName.value,
@@ -29,7 +35,6 @@ function startGame() {
 
     scores.push(scoreItem);
 
-
     document.body.className = "";
     start.className = "started";
 
@@ -37,7 +42,7 @@ function startGame() {
     const quoteText = quotes[quoteIndex];
 
     // quoteText = "type me";
-    wordQueue = quoteText.split(' ');
+    wordQueue = removeSpecialChars(quoteText).split(' ');
     quote.innerHTML = wordQueue.map(word => (`<span>${word}</span>`)).join('');
 
     highlightPosition = 0;
@@ -49,8 +54,13 @@ function startGame() {
     start.className = "started";
     setTimeout(() => {start.className = "button";}, 2000);
 }
-start.addEventListener('click', startGame);
-input.addEventListener('input', checkInput);
+
+
+function removeSpecialChars(str) {
+    return str.replace(/(?!\w|\s)./g, '')
+      .replace(/\s+/g, ' ')
+      .replace(/^(\s*)([\W\w]*)(\b\s*$)/g, '$2');
+  }
 
 function checkInput() {
     console.log("Checking", input.value);
@@ -74,7 +84,8 @@ function checkInput() {
     quote.childNodes[highlightPosition].className = 'highlight';
 }
 
-function gameOver() {
+function gameOver(){
+
     const elapsedTime = new Date().getTime() - startTime;
     document.body.className = "winner";
     message.innerHTML = `<span class="congrats">Congratulations!</span>
@@ -84,36 +95,80 @@ function gameOver() {
     const lastScoreItem = scores.pop();
     lastScoreItem.milliseconds = elapsedTime;
     scores.push(lastScoreItem);
-    console.log('The scores array at the end of the game is ', scores);
     saveScores();
 
-    //clear out old list in DOM
-    while(scoresUnorderedList.firstChild) {
+    //clear out the list
+    while(scoresUnorderedList.firstChild){
         scoresUnorderedList.removeChild(scoresUnorderedList.firstChild);
     }
 
-    for(let score of getScores()) {
-        const li = createElementForScore(score);
-        scoresUnorderedList.appendChild(li);
-    }
-  }
+    
+    //get from localStorage
+    let scoreArr = getScores();
+    //get current score
+    let currentScore = scoreArr.pop();
+    let topScore = getTopScore(scoreArr);
+    //take out any scores that were 0
+    scoreArr = scoreArr.filter(function( obj ) {
+        return obj.milliseconds !== 0;
+    });
 
-function getScores() {
-const noScoresFound = '[]';
-const scoresJSON = localStorage.getItem('scores') || noScoresFound;
-return JSON.parse(scoresJSON);
+
+    //add current score to li at top
+    const liCurrentItem = createElementForScore(currentScore, "Your score: ");
+    scoresUnorderedList.appendChild(liCurrentItem);
+
+    //add fastest score to li's
+    const liTopScore = createElementForScore(topScore, "The Top Score is: ");
+    scoresUnorderedList.appendChild(liTopScore);
+    //Remove old for loop to avoid really long list of scores
+    // for(let score of getScores()){
+        //removed logic here
+    // 
+
 }
 
-function saveScores() {
-const data = JSON.stringify(scores);
-localStorage.setItem('scores', data);
+function getTopScore(scoreArr) {
+    //get fastest score
+    // let topScore = Math.min(...scoreArr.map(item => item.milliseconds))
+    let topScore = scoreArr.reduce(function(prev, current) {
+        return (prev.milliseconds < current.milliseconds) ? prev : current
+    }) //returns object
+    console.log("topScore is", topScore);
+    return topScore;
 }
 
-function createElementForScore(score){
+function getScores(){
+    const noScoreFound = "[]";
+    const scoresJSON = localStorage.getItem('scores') || noScoreFound;
+    let scoreArr =  JSON.parse(scoresJSON);
+    //take out any scores that are 0
+    scoreArr = scoreArr.filter(function( obj ) {
+        return obj.milliseconds !== 0;
+    });
+    return scoreArr;
+}
+
+function saveScores(){
+    const data = JSON.stringify(scores);
+    localStorage.setItem('scores', data);
+}
+
+function createElementForScore(score, scoreMessage){
     const template = document.getElementById("score-item-template");
     const newListItem = template.content.cloneNode(true);
 
     const text = newListItem.querySelector(".score-text");
-    text.innerHTML = score.name + " in " + score.milliseconds/1000 + " seconds.";
+    text.innerHTML = scoreMessage + " " + score.name + " in " + score.milliseconds/1000 + " seconds.";
     return newListItem;
+}
+
+function initializeGame() {
+    quote.innerHTML = '';
+    message.innerHTML = '';
+
+    let topScore = getTopScore(scores);
+    console.log("top score", topScore);
+    const liTopScore = createElementForScore(topScore, "The Top Score is: ");
+    scoresUnorderedList.appendChild(liTopScore);
 }
