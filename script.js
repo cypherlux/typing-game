@@ -1,10 +1,10 @@
 const quotes = [
-    'The only limit is your own imagination.',
-    'The gods came to dance.',
-    'My heart is hooked forever!',
-    'Dream bodies hover between the dream world...',
-    'The intention of our minds is powerful...and a curse.',
-    'There is more to reality than meets a normal eye.',
+    'The only limit is your own imagination',
+    'The gods came to dance',
+    'My heart is hooked forever',
+    'Dream bodies hover between the dream world',
+    'The intention of our minds is powerful',
+    'There is more to reality than meets a normal eye',
 ]
 
 const quote = document.getElementById('quote');
